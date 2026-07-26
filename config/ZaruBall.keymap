@@ -14,7 +14,7 @@
 #define LOWER    2
 #define RAISE    3
 #define ADJUST   4
-#define SCROLL   2
+#define SCROLL   5
 
 // スクロール量の設定
 
@@ -28,7 +28,8 @@
     >;
 
     scroller {
-        layers = <SCROLL>;
+        // Lower 層、または Scroll 層（Mouse 層の下段キー押し続け）でスクロール
+        layers = <LOWER SCROLL>;
         input-processors = <
                             &zip_xy_transform (INPUT_TRANSFORM_XY_SWAP | INPUT_TRANSFORM_X_INVERT)
                             &zip_xy_scaler 1 20
@@ -166,7 +167,7 @@
 &to_layer_0 ESC     &to_layer_0 N1  &to_layer_0 N2  &to_layer_0 N3  &to_layer_0 N4  &to_layer_0 N5                     &trans  &trans  &trans  &trans                     &to_layer_0 N6  &to_layer_0 N7  &to_layer_0 N8  &to_layer_0 N9  &to_layer_0 N0            &to_layer_0 MINUS
 &to_layer_0 TAB     &to_layer_0 Q   &to_layer_0 W   &to_layer_0 E   &to_layer_0 R   &to_layer_0 T                      &trans  &trans  &trans  &trans                     &to_layer_0 Y   &to_layer_0 U   &to_layer_0 I   &to_layer_0 O   &to_layer_0 P             &to_layer_0 EQUAL
 &to_layer_0 CAPS    &to_layer_0 A   &mkp RCLK       &mkp MCLK       &mkp LCLK       &msc SCRL_UP    &msc SCRL_LEFT     &trans  &trans  &trans  &trans    &msc SCRL_LEFT   &msc SCRL_UP    &mkp LCLK       &mkp MCLK       &mkp RCLK       &to_layer_0 SINGLE_QUOTE  &to_layer_0 SEMICOLON
-&to_layer_0 LSHIFT  &to_layer_0 Z   &to_layer_0 X   &mkp MB4        &mkp MB5        &msc SCRL_DOWN  &msc SCRL_RIGHT    &trans  &trans  &trans  &trans    &msc SCRL_RIGHT  &msc SCRL_DOWN  &mkp MB4        &mkp LCLK       &mkp RCLK       &msc MOVE_Y(10)           &trans
+&mo SCROLL          &mo SCROLL      &mo SCROLL      &mkp MB4        &mkp MB5        &mo SCROLL      &mo SCROLL         &trans  &trans  &trans  &trans    &mo SCROLL       &mo SCROLL      &mkp MB4        &mkp LCLK       &mkp RCLK       &mo SCROLL                &mo SCROLL
 &trans              &trans                          &trans          &trans          &trans          &trans                                               &trans           &trans                                                                                    &trans
             >;
         };
@@ -207,9 +208,19 @@
             >;
         };
 
-        // Extra layer can be added in ZMK STUDIO
+        // Mouse 層の下段キー押し続けで有効化。全キー transparent（下の Mouse 層に透過）
+        scroll_layer {
+            display-name = "Scroll";
+            bindings = <
+&trans  &trans  &trans  &trans  &trans  &trans              &trans  &trans  &trans  &trans              &trans  &trans  &trans  &trans  &trans  &trans
+&trans  &trans  &trans  &trans  &trans  &trans              &trans  &trans  &trans  &trans              &trans  &trans  &trans  &trans  &trans  &trans
+&trans  &trans  &trans  &trans  &trans  &trans  &trans      &trans  &trans  &trans  &trans    &trans  &trans  &trans  &trans  &trans  &trans  &trans
+&trans  &trans  &trans  &trans  &trans  &trans  &trans      &trans  &trans  &trans  &trans    &trans  &trans  &trans  &trans  &trans  &trans  &trans
+&trans  &trans         &trans  &trans  &trans  &trans                                    &trans  &trans                                      &trans
+            >;
+        };
 
-        extra1 { status = "reserved"; };
+        // Extra layer can be added in ZMK STUDIO
 
         extra2 { status = "reserved"; };
     };
