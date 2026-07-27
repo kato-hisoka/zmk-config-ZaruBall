@@ -26,7 +26,7 @@
         compatible = "zmk,input-processor-temp-layer-threshold";
         #input-processor-cells = <2>;
 
-        threshold = <30>;              // AML 発動に必要な累積移動量
+        threshold = <15>;              // AML 発動に必要な累積移動量
         require-prior-idle-ms = <300>; // 打鍵直後はこの時間 AML を発動しない
         reset-timeout-ms = <200>;      // 無操作で累積移動量をリセット
 
@@ -38,7 +38,7 @@
 &trackball_listener {
     input-processors = <
                          &zip_xy_transform (INPUT_TRANSFORM_XY_SWAP | INPUT_TRANSFORM_Y_INVERT | INPUT_TRANSFORM_X_INVERT)
-                         &zip_xy_scaler 1 4
+                         &zip_xy_scaler 1 2
                          &zip_temp_layer_threshold MOUSE 1000
     >;
 
@@ -47,7 +47,7 @@
         layers = <LOWER SCROLL>;
         input-processors = <
                             &zip_xy_transform (INPUT_TRANSFORM_XY_SWAP | INPUT_TRANSFORM_X_INVERT)
-                            &zip_xy_scaler 1 4
+                            &zip_xy_scaler 1 2
                             &zip_xy_to_scroll_mapper
         >;
     };
