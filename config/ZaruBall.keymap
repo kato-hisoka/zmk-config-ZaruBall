@@ -31,7 +31,7 @@
         reset-timeout-ms = <200>;      // 無操作で累積移動量をリセット
 
         // クリック／スクロール操作中は AML を解除しない（Mouse 層の該当キー位置）
-        excluded-positions = <34 35 36 37 38 43 44 45 46 47 53 54 55 56 61 62 63 64 65 66>;
+        excluded-positions = <34 35 36 37 38 43 44 45 46 47 50 51 52 53 54 55 56 61 62 63 64 65 66 67>;
     };
 };
 
@@ -47,7 +47,7 @@
         layers = <LOWER SCROLL>;
         input-processors = <
                             &zip_xy_transform (INPUT_TRANSFORM_XY_SWAP | INPUT_TRANSFORM_X_INVERT)
-                            &zip_xy_scaler 1 20
+                            &zip_xy_scaler 1 10
                             &zip_xy_to_scroll_mapper
         >;
     };
@@ -182,7 +182,7 @@
 &to_layer_0 ESC     &to_layer_0 N1  &to_layer_0 N2  &to_layer_0 N3  &to_layer_0 N4  &to_layer_0 N5                     &trans  &trans  &trans  &trans                     &to_layer_0 N6  &to_layer_0 N7  &to_layer_0 N8  &to_layer_0 N9  &to_layer_0 N0            &to_layer_0 MINUS
 &to_layer_0 TAB     &to_layer_0 Q   &to_layer_0 W   &to_layer_0 E   &to_layer_0 R   &to_layer_0 T                      &trans  &trans  &trans  &trans                     &to_layer_0 Y   &to_layer_0 U   &to_layer_0 I   &to_layer_0 O   &to_layer_0 P             &to_layer_0 EQUAL
 &to_layer_0 CAPS    &to_layer_0 A   &mkp RCLK       &mkp MCLK       &mkp LCLK       &msc SCRL_UP    &msc SCRL_LEFT     &trans  &trans  &trans  &trans    &msc SCRL_LEFT   &msc SCRL_UP    &mkp LCLK       &mkp MCLK       &mkp RCLK       &to_layer_0 SINGLE_QUOTE  &to_layer_0 SEMICOLON
-&mo SCROLL          &mo SCROLL      &mo SCROLL      &mkp MB4        &mkp MB5        &mo SCROLL      &mo SCROLL         &trans  &trans  &trans  &trans    &mo SCROLL       &mo SCROLL      &mkp MB4        &mkp MCLK       &mkp LCLK       &mo RCLK                &mo SCROLL
+&mo SCROLL          &mo SCROLL      &mo SCROLL      &mkp MB4        &mkp MB5        &mo SCROLL      &mo SCROLL         &trans  &trans  &trans  &trans    &mo SCROLL       &mo SCROLL      &mkp MB4        &mkp MCLK       &mkp LCLK       &mkp RCLK                 &mo SCROLL
 &trans              &trans                          &trans          &trans          &trans          &trans                                               &trans           &trans                                                                                    &trans
             >;
         };
