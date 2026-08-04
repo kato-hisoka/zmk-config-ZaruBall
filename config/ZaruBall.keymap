@@ -38,7 +38,7 @@
 
 // 右が約20°下がっている取り付けを補正（逆方向なら 340）
 &sensor_rotation {
-    rotation-angle = <20>;
+    rotation-angle = <330>;
 };
 
 &trackball_listener {
