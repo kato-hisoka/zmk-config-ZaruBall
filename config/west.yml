@@ -8,6 +8,8 @@ manifest:
       url-base: https://github.com/caksoylar
     - name: yamaryu211
       url-base: https://github.com/yamaryu211
+    - name: hsgw
+      url-base: https://github.com/hsgw
   projects:
     - name: zmk
       remote: zmkfirmware
@@ -21,6 +23,9 @@ manifest:
       revision: v0.3-branch
     - name: zmk-input-processor-temp-layer-threshold
       remote: yamaryu211
+      revision: main
+    - name: zmk-feature-sensor_rotation
+      remote: hsgw
       revision: main
   self:
     path: config

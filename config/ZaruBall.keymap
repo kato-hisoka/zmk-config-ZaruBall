@@ -2,6 +2,7 @@
 
 #include <behaviors/rgbled_widget.dtsi>
 #include <input/processors.dtsi>
+#include <input/processors/sensor_rotation.dtsi>
 #include <dt-bindings/zmk/input_transform.h>
 #include <behaviors.dtsi>
 #include <dt-bindings/zmk/bt.h>
@@ -35,9 +36,15 @@
     };
 };
 
+// 右が約20°下がっている取り付けを補正（逆方向なら 340）
+&sensor_rotation {
+    rotation-angle = <20>;
+};
+
 &trackball_listener {
     input-processors = <
                          &zip_xy_transform (INPUT_TRANSFORM_XY_SWAP | INPUT_TRANSFORM_Y_INVERT | INPUT_TRANSFORM_X_INVERT)
+                         &sensor_rotation
                          &zip_xy_scaler 1 1
                          &zip_y_scaler 4 5
                          &zip_temp_layer_threshold MOUSE 3000
@@ -48,6 +55,7 @@
         layers = <LOWER SCROLL>;
         input-processors = <
                             &zip_xy_transform (INPUT_TRANSFORM_XY_SWAP | INPUT_TRANSFORM_X_INVERT)
+                            &sensor_rotation
                             &zip_xy_scaler 1 20
                             &zip_xy_to_scroll_mapper
         >;
