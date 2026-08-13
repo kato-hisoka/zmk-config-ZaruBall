@@ -180,8 +180,8 @@
             display-name = "Mouse";
             sensor-bindings = <&scroll_down_up>;
             bindings = <
-&to_layer_0 ESC     &to_layer_0 N1  &to_layer_0 N2  &to_layer_0 N3  &to_layer_0 N4  &to_layer_0 N5                     &trans  &trans  &trans  &trans                     &to_layer_0 N6  &to_layer_0 N7  &to_layer_0 N8  &to_layer_0 N9  &to_layer_0 N0            &to_layer_0 MINUS
-&to_layer_0 TAB     &to_layer_0 Q   &to_layer_0 W   &to_layer_0 E   &to_layer_0 R   &to_layer_0 T                      &trans  &trans  &trans  &trans                     &to_layer_0 Y   &to_layer_0 U   &to_layer_0 I   &to_layer_0 O   &to_layer_0 P             &to_layer_0 EQUAL
+&trans     &trans  &trans  &trans  &trans  &trans                     &trans  &trans  &trans  &trans                     &trans  &trans  &trans  &trans  &trans            &trans
+&trans     &trans   &trans   &trans   &trans   &trans                      &trans  &trans  &trans  &trans                     &trans   &trans   &trans   &trans   &trans             &trans
 &trans              &trans          &trans          &trans          &trans          &trans          &trans             &trans  &trans  &trans  &trans    &mo 3            &kp LEFT_ARROW  &kp DOWN_ARROW  &kp UP          &kp RIGHT_ARROW &to_layer_0 SINGLE_QUOTE  &to_layer_0 SEMICOLON
 &trans              &trans          &trans          &trans          &trans          &trans          &trans             &trans  &trans  &trans  &trans    &trans           &trans          &mkp MB4        &mkp MCLK       &mkp LCLK       &mkp RCLK                 &mo SCROLL
 &trans              &trans       &trans          &trans          &trans          &trans                                           &trans           &trans                                                                                    &trans
