@@ -31,7 +31,7 @@
         reset-timeout-ms = <200>;      // 無操作で累積移動量をリセット
 
         // クリック／スクロール操作中は AML を解除しない（Mouse 層の該当キー位置）
-        excluded-positions = <34 35 36 37 38 43 44 45 46 47 50 51 52 53 54 55 56 61 62 63 64 65 66 67>;
+        excluded-positions = <34 35 36 37 38 43 44 45 46 47 50 51 52 53 54 55 56 61 62 63 64 65 66 67 68 69 70 71 72 73 74 75 76>;
     };
 };
 
@@ -184,7 +184,7 @@
 &to_layer_0 TAB     &to_layer_0 Q   &to_layer_0 W   &to_layer_0 E   &to_layer_0 R   &to_layer_0 T                      &trans  &trans  &trans  &trans                     &to_layer_0 Y   &to_layer_0 U   &to_layer_0 I   &to_layer_0 O   &to_layer_0 P             &to_layer_0 EQUAL
 &trans              &trans          &trans          &trans          &trans          &trans          &trans             &trans  &trans  &trans  &trans    &mo 3            &kp LEFT_ARROW  &kp DOWN_ARROW  &kp UP          &kp RIGHT_ARROW &to_layer_0 SINGLE_QUOTE  &to_layer_0 SEMICOLON
 &trans              &trans          &trans          &trans          &trans          &trans          &trans             &trans  &trans  &trans  &trans    &trans           &trans          &mkp MB4        &mkp MCLK       &mkp LCLK       &mkp RCLK                 &mo SCROLL
-&trans              &trans                          &trans          &trans          &kp LEFT_COMMAND    &trans                                           &trans           &trans                                                                                    &trans
+&trans              &trans       &trans          &trans          &trans          &trans                                           &trans           &trans                                                                                    &trans
             >;
         };
 
