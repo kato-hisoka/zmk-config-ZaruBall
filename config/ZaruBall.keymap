@@ -180,11 +180,11 @@
             display-name = "Mouse";
             sensor-bindings = <&scroll_down_up>;
             bindings = <
-&trans     &trans  &trans  &trans  &trans  &trans                     &trans  &trans  &trans  &trans                     &trans  &trans  &trans  &trans  &trans            &trans
-&trans     &trans   &trans   &trans   &trans   &trans                      &trans  &trans  &trans  &trans                     &trans   &trans   &trans   &trans   &trans             &trans
-&trans              &trans          &trans          &trans          &trans          &trans          &trans             &trans  &trans  &trans  &trans    &mo 3            &kp LEFT_ARROW  &kp DOWN_ARROW  &kp UP          &kp RIGHT_ARROW &to_layer_0 SINGLE_QUOTE  &to_layer_0 SEMICOLON
-&trans              &trans          &trans          &trans          &trans          &trans          &trans             &trans  &trans  &trans  &trans    &trans           &trans          &mkp MB4        &mkp MCLK       &mkp LCLK       &mkp RCLK                 &mo SCROLL
-&trans              &trans       &trans          &trans          &trans          &trans                                           &trans           &trans                                                                                    &trans
+&trans  &trans  &trans  &trans  &trans  &trans              &trans  &trans  &trans  &trans              &trans  &trans     &trans     &trans     &trans     &trans
+&trans  &trans  &trans  &trans  &trans  &trans              &trans  &trans  &trans  &trans              &trans  &trans     &trans     &trans     &trans     &trans
+&trans  &trans  &trans  &trans  &trans  &trans  &trans      &trans  &trans  &trans  &trans    &mo 3    &trans  &trans     &trans     &trans     &trans     &trans
+&trans  &trans  &trans  &trans  &trans  &trans  &trans      &trans  &trans  &trans  &trans    &trans   &trans  &mkp MB4  &mkp MCLK  &mkp LCLK  &mkp RCLK  &mo SCROLL
+&trans  &trans         &trans  &trans  &trans  &trans                                    &trans  &trans                                      &trans
             >;
         };
 
