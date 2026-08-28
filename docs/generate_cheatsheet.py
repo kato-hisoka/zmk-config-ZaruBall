@@ -42,6 +42,7 @@ LABELS = {
     "&kp DOT": ".",
     "&kp FSLH": "/",
     "&kp NON_US_BACKSLASH": "¥",
+    "&kp BACKSLASH": "\\",
     "&kp NUMBER_6": "6",
     "&kp SINGLE_QUOTE": "'",
     "&kp SEMICOLON": ";",
@@ -89,7 +90,9 @@ LABELS = {
     "&td0_sft": "英数/Alt\n×2 Raise\n×3 Mouse\n⇧=td1",
     "&td1": "かな/Ctrl\n×2 Raise\n×3 Mouse",
     "&td0": "英数/Alt",
+    "&mo 2": "Lower",
     "&mo 3": "Raise",
+    "&mo SCROLL": "Scroll",
     "&studio_unlock": "Studio",
     "&ind_bat": "Bat",
     "&ind_con": "BT sts",
@@ -187,8 +190,9 @@ def build_html(layout: list[dict], layers: list[tuple[str, list[str]]]) -> str:
   <li><b>td0_sft</b>（左親指）: タップ=英数 / ホールド=Alt / ダブル=Raise / トリプル=Mouse。Shift押し中は td1（かな/Ctrl）</li>
   <li><b>td1</b>（右親指）: タップ=かな / ホールド=Ctrl / ダブル=Raise / トリプル=Mouse</li>
   <li><b>Adjust</b>: Lower + Raise 同時押し（tri-layer）</li>
-  <li><b>トラックボール</b>: 通常ポインタ、Lower(SCROLL) でスクロール。操作で一時的に Mouse 層</li>
-  <li><b>Combo</b>: キー位置 56+61 → macro「skater」+ Enter</li>
+  <li><b>トラックボール</b>: 通常ポインタ。Lower / Scroll 層でスクロール。移動量で一時的に Mouse 層（AML）</li>
+  <li><b>Scroll</b>: Mouse 層の Scroll キー押し続けで有効。キーは透過、ボールはスクロール</li>
+  <li><b>Combo</b>: キー位置 56+61（Lower + KP Enter）→ macro「skater」+ Enter</li>
 </ul>
 """
     unit = 52
@@ -345,22 +349,231 @@ def build_html(layout: list[dict], layers: list[tuple[str, list[str]]]) -> str:
 """
 
 
-def to_pdf(html_path: Path, pdf_path: Path) -> None:
-    if not CHROME.exists():
-        print(f"Chrome not found at {CHROME}; skip PDF", file=sys.stderr)
-        return
-    subprocess.run(
-        [
-            str(CHROME),
-            "--headless=new",
-            "--disable-gpu",
-            "--no-pdf-header-footer",
-            f"--print-to-pdf={pdf_path}",
-            html_path.resolve().as_uri(),
-        ],
-        check=True,
-        capture_output=True,
+COLORS = {
+    "": ((250, 250, 250), (187, 187, 187), (26, 26, 26)),
+    "trans": ((243, 243, 243), (200, 200, 200), (187, 187, 187)),
+    "none": ((236, 236, 236), (210, 210, 210), (204, 204, 204)),
+    "layer": ((255, 232, 214), (196, 92, 38), (90, 40, 10)),
+    "mouse": ((227, 242, 253), (25, 118, 210), (13, 71, 161)),
+    "sys": ((243, 229, 245), (123, 31, 162), (74, 20, 140)),
+    "mod": ((232, 245, 233), (56, 142, 60), (27, 94, 32)),
+    "ime": ((255, 248, 225), (249, 168, 37), (121, 85, 0)),
+}
+
+
+def _load_font(size: int) -> "ImageFont.FreeTypeFont | ImageFont.ImageFont":
+    from PIL import ImageFont
+
+    candidates = [
+        "/System/Library/Fonts/ヒラギノ角ゴシック W3.ttc",
+        "/System/Library/Fonts/Hiragino Sans GB.ttc",
+        "/Library/Fonts/Arial Unicode.ttf",
+        "/System/Library/Fonts/Supplemental/Arial Unicode.ttf",
+    ]
+    for path in candidates:
+        if Path(path).exists():
+            try:
+                return ImageFont.truetype(path, size=size, index=0)
+            except OSError:
+                continue
+    return ImageFont.load_default()
+
+
+def _draw_rounded_rect(draw, xy, radius, fill, outline, width=1):
+    draw.rounded_rectangle(xy, radius=radius, fill=fill, outline=outline, width=width)
+
+
+def render_layer_image(layout: list[dict], layer_name: str, bindings: list[str], scale: int = 56):
+    from PIL import Image, ImageDraw
+
+    pad = 24
+    max_x = max(k["x"] + k.get("w", 1) for k in layout)
+    max_y = max(k["y"] + 1.1 for k in layout)
+    width = int(max_x * scale + pad * 2)
+    height = int(max_y * scale + pad * 2 + 36)
+
+    img = Image.new("RGB", (width, height), (255, 255, 255))
+    draw = ImageDraw.Draw(img)
+    title_font = _load_font(22)
+    key_font = _load_font(13)
+    small_font = _load_font(9)
+
+    draw.text((pad, 6), layer_name, fill=(26, 26, 26), font=title_font)
+    draw.rectangle((pad, 32, pad + 6, 48), fill=(196, 92, 38))
+
+    for i, k in enumerate(layout):
+        binding = bindings[i]
+        lab = label_for(binding)
+        cls = key_class(lab, binding)
+        fill, outline, text_color = COLORS.get(cls, COLORS[""])
+        w = k.get("w", 1)
+        x = pad + k["x"] * scale
+        y = pad + 36 + k["y"] * scale
+        kw = w * scale - 4
+        kh = scale - 4
+        r = k.get("r", 0)
+
+        key_img = Image.new("RGBA", (int(kw) + 4, int(kh) + 4), (0, 0, 0, 0))
+        key_draw = ImageDraw.Draw(key_img)
+        _draw_rounded_rect(
+            key_draw,
+            (1, 1, kw, kh),
+            radius=6,
+            fill=fill + ((255,) if isinstance(fill, tuple) else ()),
+            outline=outline,
+            width=1 if cls != "trans" else 1,
+        )
+        if cls == "trans":
+            # dashed look via lighter outline already
+            pass
+
+        lines = lab.split("\n")
+        font = small_font if len(lines) > 1 or len(lab) > 6 else key_font
+        total_h = sum(
+            (font.getbbox(line)[3] - font.getbbox(line)[1]) + 1 for line in lines
+        )
+        ty = (kh - total_h) / 2 + 1
+        for line in lines:
+            bbox = font.getbbox(line)
+            lw = bbox[2] - bbox[0]
+            lh = bbox[3] - bbox[1]
+            key_draw.text(((kw - lw) / 2 + 1, ty), line, fill=text_color, font=font)
+            ty += lh + 1
+
+        if r:
+            key_img = key_img.rotate(-r, expand=True, resample=Image.Resampling.BICUBIC)
+            ox = int(x + kw / 2 - key_img.width / 2)
+            oy = int(y + kh / 2 - key_img.height / 2)
+            img.paste(key_img, (ox, oy), key_img)
+        else:
+            img.paste(key_img, (int(x), int(y)), key_img)
+
+    return img
+
+
+def build_pdf(layout: list[dict], layers: list[tuple[str, list[str]]], pdf_path: Path) -> None:
+    from PIL import Image, ImageDraw
+
+    # A4 landscape at 150 DPI
+    page_w, page_h = 1754, 1240
+    margin = 36
+    notes = [
+        "td0_sft（左親指）: タップ=英数 / ホールド=Alt / ダブル=Raise / トリプル=Mouse。Shift押し中は td1",
+        "td1（右親指）: タップ=かな / ホールド=Ctrl / ダブル=Raise / トリプル=Mouse",
+        "Adjust: Lower + Raise 同時押し（tri-layer）  /  Scroll: Mouse層のScrollキー押し続け",
+        "トラックボール: 通常ポインタ。Lower/Scrollでスクロール。移動量で一時Mouse(AML)",
+        "Combo: キー位置 56+61（Lower + KP Enter）→ macro「skater」+ Enter",
+    ]
+
+    layer_imgs = [
+        (name, render_layer_image(layout, name, bindings)) for name, bindings in layers
+    ]
+
+    pages: list[Image.Image] = []
+
+    # Page 1: title + notes + first 2 layers
+    page = Image.new("RGB", (page_w, page_h), (255, 255, 255))
+    draw = ImageDraw.Draw(page)
+    title_font = _load_font(32)
+    body_font = _load_font(16)
+    small_font = _load_font(13)
+    draw.text((margin, 24), "ZaruBall Keymap Cheatsheet", fill=(26, 26, 26), font=title_font)
+    draw.text(
+        (page_w - margin - 280, 36),
+        "config/ZaruBall.keymap",
+        fill=(100, 100, 100),
+        font=small_font,
     )
+    draw.line((margin, 70, page_w - margin, 70), fill=(34, 34, 34), width=2)
+
+    y = 86
+    draw.rounded_rectangle(
+        (margin, y, page_w - margin, y + 110),
+        radius=8,
+        fill=(250, 248, 245),
+        outline=(221, 221, 221),
+    )
+    ty = y + 10
+    for line in notes:
+        draw.text((margin + 14, ty), "• " + line, fill=(40, 40, 40), font=small_font)
+        ty += 18
+
+    y = y + 126
+    # legend
+    legend = [
+        ("Layer / TapDance", COLORS["layer"][0]),
+        ("Mouse", COLORS["mouse"][0]),
+        ("Modifier", COLORS["mod"][0]),
+        ("IME", COLORS["ime"][0]),
+        ("System / BT", COLORS["sys"][0]),
+        ("Transparent", COLORS["trans"][0]),
+    ]
+    lx = margin
+    for text, color in legend:
+        draw.rectangle((lx, y, lx + 14, y + 14), fill=color, outline=(153, 153, 153))
+        draw.text((lx + 18, y - 1), text, fill=(60, 60, 60), font=small_font)
+        lx += 14 + 8 + small_font.getbbox(text)[2] + 18
+
+    y += 28
+    for name, limg in layer_imgs[:2]:
+        # scale to fit width
+        max_w = page_w - 2 * margin
+        if limg.width > max_w:
+            ratio = max_w / limg.width
+            limg = limg.resize(
+                (int(limg.width * ratio), int(limg.height * ratio)),
+                Image.Resampling.LANCZOS,
+            )
+        page.paste(limg, (margin, y))
+        y += limg.height + 12
+    pages.append(page)
+
+    # Remaining layers, 2 per page
+    rest = layer_imgs[2:]
+    for i in range(0, len(rest), 2):
+        page = Image.new("RGB", (page_w, page_h), (255, 255, 255))
+        y = margin
+        for name, limg in rest[i : i + 2]:
+            max_w = page_w - 2 * margin
+            if limg.width > max_w:
+                ratio = max_w / limg.width
+                limg = limg.resize(
+                    (int(limg.width * ratio), int(limg.height * ratio)),
+                    Image.Resampling.LANCZOS,
+                )
+            page.paste(limg, (margin, y))
+            y += limg.height + 16
+        pages.append(page)
+
+    pages[0].save(
+        pdf_path,
+        "PDF",
+        resolution=150.0,
+        save_all=True,
+        append_images=pages[1:],
+    )
+
+
+def to_pdf_chrome(html_path: Path, pdf_path: Path) -> bool:
+    if not CHROME.exists():
+        return False
+    try:
+        subprocess.run(
+            [
+                str(CHROME),
+                "--headless=new",
+                "--disable-gpu",
+                "--no-pdf-header-footer",
+                f"--print-to-pdf={pdf_path}",
+                html_path.resolve().as_uri(),
+            ],
+            check=True,
+            capture_output=True,
+            timeout=60,
+        )
+        return pdf_path.exists() and pdf_path.stat().st_size > 1000
+    except (subprocess.CalledProcessError, subprocess.TimeoutExpired, OSError):
+        return False
 
 
 def main() -> None:
@@ -374,9 +587,11 @@ def main() -> None:
             )
     OUT_HTML.write_text(build_html(layout, layers), encoding="utf-8")
     print(f"Wrote {OUT_HTML}")
-    to_pdf(OUT_HTML, OUT_PDF)
+
+    if not to_pdf_chrome(OUT_HTML, OUT_PDF):
+        build_pdf(layout, layers, OUT_PDF)
     if OUT_PDF.exists():
-        print(f"Wrote {OUT_PDF}")
+        print(f"Wrote {OUT_PDF} ({OUT_PDF.stat().st_size} bytes)")
 
 
 if __name__ == "__main__":
