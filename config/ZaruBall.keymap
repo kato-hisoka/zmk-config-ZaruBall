@@ -159,6 +159,20 @@
             bindings = <&macro_skater>;
             key-positions = <56 61>;
         };
+
+        // Mouse層: RCLK + SCROLL → Cmd+W（タブ閉じ）
+        combo_mouse_cmd_w {
+            bindings = <&kp LG(W)>;
+            key-positions = <66 67>;
+            layers = <MOUSE>;
+        };
+
+        // Mouse層: LCLK + RCLK → Shift+Cmd+T（タブ復元）
+        combo_mouse_shift_cmd_t {
+            bindings = <&kp LS(LG(T))>;
+            key-positions = <65 66>;
+            layers = <MOUSE>;
+        };
     };
 
     keymap {
