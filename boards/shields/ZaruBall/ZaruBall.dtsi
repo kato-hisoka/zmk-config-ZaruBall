@@ -143,6 +143,8 @@
     kscan0: kscan0 {
         compatible = "zmk,kscan-gpio-charlieplex";
         wakeup-source;
+        debounce-press-ms = <10>;
+        debounce-release-ms = <10>;
     };
 };
 
@@ -207,7 +209,8 @@
         x-input-code = <INPUT_REL_X>;
         y-input-code = <INPUT_REL_Y>;
 
-        force-awake;
+        // force-awake は ACTIVE 中にセンサーを常時起動し、離指後のドリフトを招きやすいため無効化
+        // force-awake;
         /* keep the sensor awake while ZMK activity state is ACTIVE,
         fallback to normal downshift mode after ZMK goes into IDLE / SLEEP mode.
         thus, the sensor would be a `wakeup-source` */
