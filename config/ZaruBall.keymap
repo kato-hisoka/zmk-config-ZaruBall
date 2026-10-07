@@ -40,7 +40,7 @@
                          &zip_xy_transform (INPUT_TRANSFORM_XY_SWAP | INPUT_TRANSFORM_Y_INVERT | INPUT_TRANSFORM_X_INVERT)
                          &zip_xy_scaler 1 1
                          &zip_y_scaler 4 5
-                         &zip_temp_layer_threshold MOUSE 3000
+                         &zip_temp_layer_threshold MOUSE 30000
     >;
 
     scroller {
@@ -172,6 +172,20 @@
             bindings = <&kp LS(LG(T))>;
             key-positions = <65 66>;
             layers = <MOUSE>;
+        };
+
+        // Base層: L + ; → Cmd+Alt+←
+        combo_base_cmd_alt_left {
+            bindings = <&kp LG(LA(LEFT))>;
+            key-positions = <47 48>;
+            layers = <BASE>;
+        };
+
+        // Base層: ; + ' → Cmd+Alt+→
+        combo_base_cmd_alt_right {
+            bindings = <&kp LG(LA(RIGHT))>;
+            key-positions = <48 49>;
+            layers = <BASE>;
         };
     };
 
